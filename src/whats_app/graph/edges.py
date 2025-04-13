@@ -1,16 +1,17 @@
 # fmt: off
-import os
 import sys
+import os
+from tkinter import END
+
+from whats_app import settings
+from whats_app.modules.schedules.context_generation import ScheduleContextGenerator
 
 current_dir = os.path.dirname(os.path.abspath(__file__))
-parent_dir = os.path.abspath(os.path.join(current_dir, "..", "..", ".."))
+parent_dir =  os.path.abspath(os.path.join(current_dir, "..", ".."))
 sys.path.append(parent_dir)
-from langgraph.graph import END
 from typing_extensions import Literal
 
 from whats_app.graph.state import AICompanionState
-from whats_app.settings import settings
-
 # fmt: on
 
 

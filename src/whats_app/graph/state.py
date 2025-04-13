@@ -11,8 +11,8 @@ class AICompanionState(MessagesState):
         audio_buffer: The buffer containing audio data for voice messages.
         image_path: Path to the current image being generated.
         current_activity: The activity that the AI companion is currently performing.
-        apply_activity: The activity that should be applied or executed next.
-        memory_context: - Flag indicating whether to apply or update the current activity.
+        apply_activity: Flag indicating whether to apply or update the current activity.
+        memory_context: - Long Term Memory context for the AI companion.
     """
 
     summary: str
