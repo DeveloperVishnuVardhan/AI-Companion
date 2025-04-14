@@ -7,7 +7,7 @@ parent_dir =  os.path.abspath(os.path.join(current_dir, "..", ".."))
 sys.path.append(parent_dir)
 
 
-from whats_app import settings
+from whats_app.settings import settings
 from whats_app.modules.memory.long_term.memory_manager import get_memory_manager
 from whats_app.modules.schedules.context_generation import ScheduleContextGenerator
 from whats_app.graph.state import AICompanionState
@@ -40,7 +40,7 @@ def context_injection_node(state: AICompanionState) -> AICompanionState:
         AICompanionState: The updated state of the AI companion.
     """
     current_activity = ScheduleContextGenerator.get_current_activity()
-    if current_activity != state["current_activity"]:
+    if current_activity != state.get("current_activity", ""):
         apply_activity = True
     else:
         apply_activity = False
@@ -95,14 +95,14 @@ async def audio_node(state: AICompanionState, config: RunnableConfig) -> AICompa
 
     chain = get_character_response_chain(state.get("summary", ""))
     text_to_speech = get_text_to_speech_model()
-    response = await chain.invoke({
+    response = chain.invoke({
         "messages": state["messages"],
         "current_activity": current_activity,
         "memory_context": memory_context
     }, config)
 
     output_audio = await text_to_speech.synthesize(response)
-    return {"messages": response, "audio_buffer": output_audio}
+    return {"messages": AIMessage(content=response), "audio_buffer": output_audio}
 
 
 async def image_node(state: AICompanionState, config: RunnableConfig) -> AICompanionState:
@@ -112,7 +112,12 @@ async def image_node(state: AICompanionState, config: RunnableConfig) -> AICompa
 
     chain = get_character_response_chain(state.get("summary", ""))
     text_to_image = get_text_to_image_model()
-    scenario = await text_to_image.create_scenario(state["messages"][-5])
+
+    # Pass the last 5 messages (or all if less than 5) as a list
+    messages_to_use = state["messages"][-5:] if len(
+        state["messages"]) >= 5 else state["messages"]
+    scenario = await text_to_image.create_scenario(messages_to_use)
+
     os.makedirs("generated_images", exist_ok=True)
     img_path = f"generated_images/image_{str(uuid4())}.png"
     await text_to_image.generate_image(scenario.image_prompt, img_path)
@@ -151,7 +156,7 @@ async def summarize_conversation_node(state: AICompanionState) -> AICompanionSta
         )
 
     messages = state["messages"] + [HumanMessage(content=summary_message)]
-    response = await model.invoke(messages)
+    response = model.invoke(messages)
 
     delete_messages = [RemoveMessage(
         id=m.id) for m in state["messages"][: -settings.TOTAL_MESSAGES_AFTER_SUMMARY]]

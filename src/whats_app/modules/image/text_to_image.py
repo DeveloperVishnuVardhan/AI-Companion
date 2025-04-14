@@ -101,8 +101,11 @@ class TextToImage:
     async def create_scenario(self, chat_history: list = None) -> ScenarioPrompt:
         """Creates a first-person narrative scenario and corresponding image prompt based on chat history."""
         try:
-            formatted_history = "\n".join(
-                [f"{msg.type.title()}: {msg.content}" for msg in chat_history[-5:]])
+            # Format the chat history, handling LangChain message objects properly
+            formatted_history = "\n".join([
+                f"{msg.__class__.__name__.replace('Message', '')}: {msg.content}"
+                for msg in chat_history
+            ])
 
             self.logger.info("Creating scenario from chat history")
 

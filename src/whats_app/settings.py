@@ -1,4 +1,5 @@
 from pydantic_settings import BaseSettings, SettingsConfigDict
+import os
 
 
 class Settings(BaseSettings):
@@ -27,7 +28,8 @@ class Settings(BaseSettings):
     TOTAL_MESSAGES_SUMMARY_TRIGGER: int = 20
     TOTAL_MESSAGES_AFTER_SUMMARY: int = 5
 
-    # SHORT_TERM_MEMORY_DB_PATH: str = "/app/data/memory.db"
+    SHORT_TERM_MEMORY_DB_PATH: str = os.path.join(
+        os.path.dirname(os.path.abspath(__file__)), "../data/memory.db")
 
 
 settings = Settings()
