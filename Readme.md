@@ -17,14 +17,15 @@ The system is built using a modular architecture with the following key componen
 
 2. **Memory Management**
 
-   - Short-term memory for active conversations
-   - Long-term memory for persistent context
+   - Short-term memory using SQLite for active conversations
+   - Long-term memory using Qdrant for persistent context
    - Memory injection for relevant context retrieval
 
 3. **Multimodal Capabilities**
-   - Text-to-Speech (TTS) for audio responses
-   - Text-to-Image (TTI) for image generation
-   - Speech-to-Text (STT) for voice message processing
+   - Text-to-Text (TTT) using llama-3.3-70b-versatile
+   - Text-to-Speech (TTS) eleven_flash_v2_5
+   - Text-to-Image (TTI) using SDXL
+   - Speech-to-Text (STT) using Whisper
 
 ### Main Components
 
@@ -46,32 +47,44 @@ The system is built using a modular architecture with the following key componen
    - `schedules.py`: Activity scheduling
    - `exceptions.py`: Error handling
 
-## System Flow
+## AI Agent workflow
 
-1. **Message Reception**
+![Alt Text](Agent-workflow.png)
 
-   - Messages received through Telegram webhook
-   - Supports text, voice messages, and images
-   - Validates user authorization
+1. **Initial Processing**
 
-2. **Processing Pipeline**
+   - Message enters through the `Store_longterm_node`
+   - Long-term memories are stored in Qdrant vector database
+   - Short-term context is maintained in SQLite database
 
-   - Message storage in long-term memory
-   - Workflow routing based on message type
-   - Context injection from current activity
-   - Memory retrieval for relevant context
+2. **Context and Routing**
 
-3. **Response Generation**
+   - `Context_injection_node` retrieves relevant context from short-term memory
+   - `Router Node` determines the appropriate processing path based on message type and context
+   - Routes to specialized nodes for different types of content:
+     - `Image_node` for image processing
+     - `Audio_node` for voice messages
+     - `Conversation_node` for text messages
+     - `Memory_Injection_node` for retrieving relevant memories
 
-   - Text responses for conversation
-   - Audio responses using TTS
-   - Image generation using TTI
-   - Conversation summarization when needed
+3. **Memory Management**
 
-4. **Response Delivery**
-   - Sends responses back through Telegram
-   - Handles different response types (text, audio, image)
-   - Error handling and fallback mechanisms
+   - Short-term memory (SQLite) stores active conversation context
+   - Long-term memory (Qdrant) stores persistent knowledge and experiences
+   - Context injection ensures relevant information is available during processing
+
+4. **Response Generation**
+
+   - Each specialized node processes its content type:
+     - Text responses using Groq language models
+     - Audio responses using ElevenLabs TTS
+     - Image generation using SDXL
+   - All nodes converge to the END node for final response delivery
+
+5. **Response Delivery**
+   - Final responses are formatted and sent back through the appropriate interface
+   - Supports multiple response types (text, audio, image)
+   - Includes error handling and fallback mechanisms
 
 ## Configuration
 
@@ -100,9 +113,12 @@ These are configured through environment variables in the `.env` file.
 
 2. **Running the Server**
 
+   - Install ngrok and run ngrok http 8000 to run your application via local machine.
+   - copy the url and paste it in webhook_url varibale in controller.py as shown in the file.
+
    ```bash
    # Start the FastAPI server
-   uvicorn src.Alice.interfaces.fastApi.controller:app --reload
+   python src.Alice.interfaces.fastApi.controller:app --reload
    ```
 
 3. **Setting up Webhook**
@@ -126,12 +142,7 @@ The system includes comprehensive error handling:
 - Fallback mechanisms for failed responses
 - Logging system for debugging
 
-## Logging
+## Next Steps
 
-Logs are stored in the `src/logs` directory with the following information:
-
-- Timestamp
-- Log level
-- Module name
-- Message content
-- Error details (when applicable)
+- Take the application into production using AWS and github actions.
+- Fine tune the models to generalize well for our use cases.
