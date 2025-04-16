@@ -1,4 +1,4 @@
-# Alice - AI Companion (Note: Credits to https://theneuralmaze.substack.com/ for providing valuable resources through their blogs and openSource projects which inspired me to build this)
+# Alice - AI Companion
 
 Alice is an advanced AI companion that integrates with Telegram, providing a sophisticated conversational experience with multimodal capabilities including text, audio, and image generation.
 ![Alt Text](System.png)
@@ -143,6 +143,10 @@ The system includes comprehensive error handling:
 - Logging system for debugging
 
 ## Next Steps
+- Take the application into production using AWS and github actions.
+- Fine tune the models to generalize well for our use cases.
+
+# Credits to https://theneuralmaze.substack.com/ for providing valuable resources through their blogs and openSource projects which inspired me to build this)
 
 - Take the application into production using AWS and github actions.
 - Fine tune the models to generalize well for our use cases.
