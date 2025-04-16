@@ -147,6 +147,3 @@ The system includes comprehensive error handling:
 - Fine tune the models to generalize well for our use cases.
 
 # Credits to https://theneuralmaze.substack.com/ for providing valuable resources through their blogs and openSource projects which inspired me to build this)
-
-- Take the application into production using AWS and github actions.
-- Fine tune the models to generalize well for our use cases.
