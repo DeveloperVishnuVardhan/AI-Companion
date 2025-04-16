@@ -327,4 +327,5 @@ short_term_memory/
 data/
 
 # Chainlit
-.chainlit/
+generated_images/*
+.chainlit/*
